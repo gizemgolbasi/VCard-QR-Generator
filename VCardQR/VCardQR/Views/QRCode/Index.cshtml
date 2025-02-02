@@ -1,0 +1,227 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
+
+
+<style>
+    .displayNone {
+        display: none;
+    }
+
+    #generateQRCodeBtn {
+        margin-top: 12px;
+    }
+</style>
+
+
+<div class="container">
+    <h1 class="text-center">QR VCard Generator</h1>
+    <form id="vcardForm" class="form-inline">
+        <div class="row">
+            <div class="form-group col-sm-3">
+                <label for="firstName">İsim</label>
+                <br>
+                <input type="text" class="form-control" id="firstName" required />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="lastName">Soyisim</label>
+                <br>
+                <input type="text" class="form-control" id="lastName" required />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="phonePersonal">Telefon</label>
+                <br>
+                <input type="text" class="form-control" id="PhoneNumber" placeholder="###-###-####" required />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="emailPersonal">Mail</label>
+                <br>
+                <input type="email" class="form-control col-sm-4" id="Mail" />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="phoneBusiness">İş Telefonu</label>
+                <br>
+                <input type="text" class="form-control" id="phoneBusiness" placeholder="###-###-####" />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="fax">Fax</label>
+                <br>
+                <input type="text" class="form-control" id="fax" placeholder="###-###-####" />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="bDay">Doğum Tarihi</label>
+                <br>
+                <input type="date" class="form-control" id="bDay" />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="instagram">Instagram</label>
+                <br>
+                <input type="text" class="form-control" id="instagram" />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="twitter">Twitter</label>
+                <br>
+                <input type="text" class="form-control" id="twitter" />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="addressNeighborhood">Mahalle</label>
+                <br>
+                <input type="text" class="form-control" id="addressNeighborhood" />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="addressStreet">Sokak</label>
+                <br>
+                <input type="text" class="form-control" id="addressStreet" />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="addressCity">Şehir</label>
+                <br>
+                <input type="text" class="form-control" id="addressCity" />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="addressState">Eyalet/Bölge</label>
+                <br>
+                <input type="text" class="form-control" id="addressState" />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="addressPostalCode">Posta Kodu</label>
+                <br>
+                <input type="text" class="form-control" id="addressPostalCode" />
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="addressCountry">Ülke</label>
+                <br>
+                <input type="text" class="form-control" id="addressCountry" />
+            </div>
+        
+
+            <button type="button" id="generateQRCodeBtn" class="btn btn-primary">QR Kod Oluştur</button>
+        </div>
+
+        <div class="qr-out row">
+            <img class="qr-img" alt="">
+        </div>
+        <div class="biscard-out"></div>
+    </form>
+
+</div>
+
+
+<br>
+<div id="qrcode"></div>
+
+
+<script src="~/js/html2canvas.js"></script>
+@* <script src="~/js/qrcodemin.js"></script> *@
+<script>
+
+    function trCharConvert(str) {
+        debugger;
+        var trChars = {
+
+            "ç": "c",
+            "ı": "i",
+            "ş": "s",
+            "ö": "o",
+            "ü": "u",
+            "ğ": "g",
+            "Ç": "C",
+            // "İ": "I",
+            "Ş": "S",
+            "Ö": "O",
+            "Ü": "U",
+            "Ğ": "G"
+        };
+
+        return str.replace(/[çışöüğÇİŞÖÜĞ]/g, function (match) {
+            return trChars[match];
+        });
+    }
+   
+
+        $("#generateQRCodeBtn").click(function () {
+            debugger;
+            var firstName = $("#firstName").val();
+            var lastName = $("#lastName").val();
+            var phoneNumber = $("#PhoneNumber").val();
+            var mail = $("#Mail").val();
+            var workNumber = $("#phoneBusiness").val();
+            var fax = $("#fax").val();
+            var bDay = $("#bDay").val().replace(/-/g, "");
+            var instagram = $("#instagram").val();
+            var twitter = $("#twitter").val();
+
+            // Adres bilgisi
+            var addressStreet = $("#addressStreet").val();
+            var addressCity = $("#addressCity").val();
+            var addressState = $("#addressState").val();
+            var addressPostalCode = $("#addressPostalCode").val();
+            var addressCountry = $("#addressCountry").val();
+            var addressNeighborhood = $("#addressNeighborhood").val();
+
+
+
+
+            if (!firstName || !lastName || !phoneNumber) {
+                alert("Lütfen tüm alanları doldurun!");
+                return;
+            }
+            $("#SaveImageButton").removeClass("displayNone");
+
+
+            var firstNameString = trCharConvert(firstName);
+            var lastNameString = trCharConvert(lastName);
+            var addressStreetString = trCharConvert(addressStreet);
+            var addressCityString = trCharConvert(addressCity);
+            var addressStateString = trCharConvert(addressState);
+            var addressPostalCodeString = trCharConvert(addressState);
+            var addressCountryString = trCharConvert(addressCountry);
+            var addressNeighborhoodString = trCharConvert(addressNeighborhood);
+
+            var vCardData = "BEGIN:VCARD\n" +
+                "VERSION:3.0\n" +
+                "N:" + encodeURIComponent(lastNameString) + ";" + encodeURIComponent(firstNameString) + ";;;\n" +
+                "FN:" + encodeURIComponent(firstNameString) + " " + encodeURIComponent(lastNameString) + "\n" +
+                "TEL;TYPE=CELL:" + encodeURIComponent(phoneNumber) + "\n" +
+                "EMAIL:" + (mail) + "\n" +
+                "TEL;TYPE=work,voice:" + (workNumber) + "\n" +
+                "TEL;TYPE=fax:" + (fax) + "\n" +
+                "BDAY:" + (bDay) + "\n"
+            if (instagram) {
+                vCardData += "X-SOCIALPROFILE;TYPE=instagram:https://www.instagram.com/" + encodeURIComponent(instagram) + "\n";
+            }
+            if (twitter) {
+                vCardData += "X-SOCIALPROFILE;TYPE=twitter:https://twitter.com/" + encodeURIComponent(twitter) + "\n";
+            }
+            if (addressStreetString || addressCityString || addressStateString || addressPostalCodeString || addressCountryString || addressNeighborhoodString) {
+                vCardData += "ADR;TYPE=HOME:;;" +
+                    encodeURIComponent(addressStreetString) + ";" +
+                    encodeURIComponent(addressNeighborhoodString) + ";" +  
+                    encodeURIComponent(addressCityString) + ";" +
+                    encodeURIComponent(addressStateString) + ";" +
+                    encodeURIComponent(addressPostalCodeString) + ";" +
+                    encodeURIComponent(addressCountryString) + "\n";
+            }
+
+            vCardData += "END:VCARD\n";
+
+
+            $("#qrcode").empty();
+            new QRCode(document.getElementById("qrcode"), {
+                text: vCardData,
+                width: 200,
+                height: 200
+            });
+            alert("QR Kod oluşturuldu! Telefonunuzla tarayarak kişiyi ekleyebilirsiniz.");
+        });
+
+    /*});*/
+</script>
+
+
